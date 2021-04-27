@@ -7,10 +7,12 @@ metadata = MetaData(engine)
 
 table = Table('users', metadata,
               Column('id', Integer, primary_key=True, autoincrement=True),
-              Column('username', String(32)),
+              Column('username', String(32), unique=True, index=True),
               Column('email', String(50)),
-              Column('password', String(32)))
+              Column('password', String(80)))
 
-metadata.create_all()
+table.drop(engine)
+table.create(engine)
+
 for _t in metadata.tables:
     print("Table: ", _t)
