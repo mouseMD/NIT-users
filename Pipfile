@@ -9,6 +9,8 @@ environs = "*"
 databases = {extras = ["postgresql"], version = "*"}
 users = {editable = true, path = "."}
 psycopg2-binary = "*"
+passlib = "*"
+pyjwt = "*"
 
 [dev-packages]
 
