@@ -43,11 +43,13 @@ def setup_routes(app):
             raise Unauthorized("Invalid credentials")
         return json({'user_id': user_id, 'token': token})
 
-    # @app.route("/user/{user_id}")
-    # async def get_user(request):
-    #     query = users.select()
-    #     rows = await request.app.ctx.db.fetch_all(query)
-    #     return json({})
+    @app.get("/user/<user_id:int>")
+    async def get_user(request, user_id):
+        query = users.select().where(users.c.id == user_id)
+        row = await request.app.ctx.db.fetch_one(query)
+        if row is None:
+            raise InvalidUsage("Invalid user_id")
+        return json({"user_info": {"username": row[1], "email": row[2]}, "offers": []})
 
     @app.route("/")
     async def test(request):
