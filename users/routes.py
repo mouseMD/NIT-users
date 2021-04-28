@@ -54,10 +54,13 @@ def setup_routes(app):
         row = await request.app.ctx.db.fetch_one(query)
         if row is None:
             raise InvalidUsage("Invalid user_id")
-        return json({"user_info": {"username": row[1], "email": row[2]}, "offers": []})
 
-    @app.route("/")
-    async def test(request):
-        query = users_table.select()
-        rows = await request.app.ctx.db.fetch_all(query)
-        return json([{'id': row[0], 'username': row[1], 'email': row[2], 'password': row[3]} for row in rows])
+        # request to offers
+        offers_url = request.app.config.OFFERS_URL
+        payload = json({"user_id": user_id})
+        headers = {'content-type': 'application/json'}
+        offers = []
+        async with request.app.ctx.offers_session.post(offers_url, json=payload, headers=headers) as resp:
+            if resp.status == 200:
+                offers = await resp.json()
+        return json({"user_info": {"username": row[1], "email": row[2]}, "offers": offers})

@@ -3,6 +3,7 @@ from environs import Env
 from users.settings import setup_config
 from databases import Database
 from users.routes import setup_routes
+from aiohttp import ClientSession
 
 app = Sanic(__name__)
 
@@ -19,12 +20,21 @@ def setup_database():
         await app.ctx.db.disconnect()
 
 
+def setup_offers_connection():
+    app.ctx.offers_session = ClientSession()
+
+    @app.listener('after_server_stop')
+    async def disconnect_from_db(*args, **kwargs):
+        await app.ctx.offers_session.close()
+
+
 def init():
     env = Env()
     env.read_env()
 
     setup_config(app, env)
     setup_database()
+    setup_offers_connection()
     setup_routes(app)
     app.run(
         host=app.config.HOST,

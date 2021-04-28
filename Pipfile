@@ -11,6 +11,7 @@ users = {editable = true, path = "."}
 psycopg2-binary = "*"
 passlib = "*"
 pyjwt = "*"
+aiohttp = "*"
 
 [dev-packages]
 

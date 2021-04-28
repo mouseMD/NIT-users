@@ -3,6 +3,7 @@ def setup_config(app, env):
         "DEBUG": env.bool("DEBUG", True),
         "HOST": env("HOST", "0.0.0.0"),
         "PORT": env.int("PORT", 8000),
-        "DB_URL": env("DB_URL", "postgresql://postgres:postgres@localhost/postgres")
+        "DB_URL": env("DB_URL", "postgresql://postgres:postgres@localhost/postgres"),
+        "OFFERS_URL": env("OFFERS_URL", "0.0.0.0:8081/offer")
     }
     app.update_config(config_data)
