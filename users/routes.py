@@ -4,6 +4,7 @@ from passlib.hash import sha256_crypt
 from users.utils import generate_token
 from sanic.exceptions import Unauthorized, InvalidUsage
 from asyncpg.exceptions import UniqueViolationError
+import aiohttp
 
 
 def setup_routes(app):
@@ -36,7 +37,6 @@ def setup_routes(app):
             password = payload['password']
         except KeyError:
             raise InvalidUsage("Invalid message format")
-        #query = users.select([users.c.id, users.c.password]) #.where(users.c.username == 'user')
         query = users_table.select().where(users_table.c.username == username)
         row = await request.app.ctx.db.fetch_one(query)
         if row is None:
@@ -60,7 +60,8 @@ def setup_routes(app):
         payload = json({"user_id": user_id})
         headers = {'content-type': 'application/json'}
         offers = []
-        async with request.app.ctx.offers_session.post(offers_url, json=payload, headers=headers) as resp:
+        async with aiohttp.ClientSession() as session:
+            resp = await session.post(offers_url, data=payload, headers=headers)
             if resp.status == 200:
                 offers = await resp.json()
         return json({"user_info": {"username": row[1], "email": row[2]}, "offers": offers})

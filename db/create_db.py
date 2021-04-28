@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, inspect
 
 DB_URL = 'postgresql://admin:admin@localhost/users'
 engine = create_engine(DB_URL)
@@ -11,7 +11,9 @@ table = Table('users', metadata,
               Column('email', String(50)),
               Column('password', String(80)))
 
-table.drop(engine)
+inspector = inspect(engine)
+if 'users' in inspector.get_table_names():
+    table.drop(engine)
 table.create(engine)
 
 for _t in metadata.tables:
