@@ -2,7 +2,7 @@ from sanic.response import json
 from users.tables import users_table
 from passlib.hash import sha256_crypt
 from users.utils import generate_token
-from sanic.exceptions import Unauthorized, InvalidUsage
+from sanic.exceptions import Unauthorized, InvalidUsage, NotFound
 from asyncpg.exceptions import UniqueViolationError
 
 
@@ -52,7 +52,7 @@ def setup_routes(app):
         query = users_table.select().where(users_table.c.id == user_id)
         row = await request.app.ctx.db.fetch_one(query)
         if row is None:
-            raise InvalidUsage("Invalid user_id")
+            raise NotFound("Invalid user_id")
 
         # request to offers
         offers_url = request.app.config.OFFERS_URL
