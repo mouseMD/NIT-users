@@ -1,1 +1,1 @@
-curl -X GET localhost:8000/user/1
+curl -X GET localhost:8000/user/4

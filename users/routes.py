@@ -57,11 +57,11 @@ def setup_routes(app):
 
         # request to offers
         offers_url = request.app.config.OFFERS_URL
-        payload = json({"user_id": user_id})
+        payload = {"user_id": user_id}
         headers = {'content-type': 'application/json'}
         offers = []
         async with aiohttp.ClientSession() as session:
-            resp = await session.post(offers_url, data=payload, headers=headers)
+            resp = await session.post(offers_url, json=payload, headers=headers)
             if resp.status == 200:
                 offers = await resp.json()
         return json({"user_info": {"username": row[1], "email": row[2]}, "offers": offers})
