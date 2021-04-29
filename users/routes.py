@@ -4,7 +4,6 @@ from passlib.hash import sha256_crypt
 from users.utils import generate_token
 from sanic.exceptions import Unauthorized, InvalidUsage
 from asyncpg.exceptions import UniqueViolationError
-import aiohttp
 
 
 def setup_routes(app):
@@ -60,8 +59,7 @@ def setup_routes(app):
         payload = {"user_id": user_id}
         headers = {'content-type': 'application/json'}
         offers = []
-        async with aiohttp.ClientSession() as session:
-            resp = await session.post(offers_url, json=payload, headers=headers)
+        async with request.app.ctx.users_session.post(offers_url, json=payload, headers=headers) as resp:
             if resp.status == 200:
                 offers = await resp.json()
         return json({"user_info": {"username": row[1], "email": row[2]}, "offers": offers})

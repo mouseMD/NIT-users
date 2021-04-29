@@ -8,6 +8,17 @@ from aiohttp import ClientSession
 app = Sanic(__name__)
 
 
+@app.listener('before_server_start')
+def init_connection(app, loop):
+    app.ctx.users_session = ClientSession(loop=loop)
+
+
+@app.listener('after_server_stop')
+def close_connection(app, loop):
+    loop.run_until_complete(app.ctx.users_session.close())
+    loop.close()
+
+
 def setup_database():
     app.ctx.db = Database(app.config.DB_URL)
 
